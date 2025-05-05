@@ -1,0 +1,15 @@
+numpy
+pandas
+matplotlib
+scipy
+seaborn
+sympy
+jupyter
+scikit-learn
+statsmodels
+
+pyqt5
+pdf2image
+pillow
+
+pylatex
