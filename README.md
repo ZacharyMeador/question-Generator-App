@@ -36,3 +36,11 @@ source venv/bin/activate  # or .\venv\Scripts\activate on Windows
 
 pip install -r requirements.txt
 python main.py
+
+### Requirements for PDF Export
+
+- [MiKTeX](https://miktex.org/download) must be installed
+- During install, choose:
+  - Preferred paper: Letter
+  - Install missing packages on-the-fly: Yes
+- Ensure `pdflatex` is in your system PATH

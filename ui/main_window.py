@@ -5,11 +5,14 @@ from PyQt5.QtWidgets import (
     QMessageBox, QLineEdit, QLabel, QListWidget, QHBoxLayout
 )
 from PyQt5.QtGui import QPixmap
+from PyQt5.QtCore import Qt
 from exports.latex_export import LaTeXExporter
 from pdf2image import convert_from_path
 from PIL import Image
 from exports.pdf_preview import convert_pdf_to_image
 import os
+from pdf_renderer import render_latex_to_pdf
+
 
 class MainWindow(QWidget):
     def __init__(self, generator=None):
@@ -56,6 +59,11 @@ class MainWindow(QWidget):
         self.generate_button = QPushButton("Generate Problem")
         self.generate_button.clicked.connect(self.generate_problem)
         right_panel.addWidget(self.generate_button)
+
+        # Add a PDF render test button
+        self.pdf_button = QPushButton("Render Sample PDF")
+        self.pdf_button.clicked.connect(self.handle_render_pdf)
+        left_panel.addWidget(self.pdf_button)  # Or left_layout if it's a local variable
 
         self.export_button = QPushButton("Export to PDF")
         self.export_button.clicked.connect(self.export_to_pdf)
@@ -126,7 +134,8 @@ class MainWindow(QWidget):
 
         if preview_path and os.path.exists(preview_path):
             pixmap = QPixmap(preview_path)
-            self.preview_label.setPixmap(pixmap.scaledToWidth(500))  # Adjust size as needed
+            label_size = self.preview_label.size()
+            self.preview_label.setPixmap(pixmap.scaled(label_size, Qt.KeepAspectRatio, Qt.SmoothTransformation))   # Adjust size as needed
             print(f"[Preview] Auto-preview updated: {preview_path}")
         else:
             self.preview_label.setText("Failed to generate preview.")
@@ -160,3 +169,29 @@ class MainWindow(QWidget):
         else:
             self.preview_label.setText("Could not generate preview.")
             print("[Preview Error] Failed to load preview image.")
+
+    def handle_render_pdf(self):
+        sample_latex = r"""
+        \documentclass{article}
+        \usepackage{amsmath}
+        \begin{document}
+        Hello, this is a test of rendering LaTeX to PDF.
+
+        Here's a math example:
+        \[
+            \int_0^1 x^2 \, dx = \frac{1}{3}
+        \]
+        \end{document}
+        """
+        pdf_path = render_latex_to_pdf(sample_latex, output_path="exports/sample_render.pdf")
+        if pdf_path:
+            print(f"PDF generated at: {pdf_path}")
+        else:
+            print("PDF generation failed.")
+
+    def resizeEvent(self, event):
+        if hasattr(self, 'preview_path') and os.path.exists(self.preview_path):
+            pixmap = QPixmap(self.preview_path)
+            self.preview_label.setPixmap(pixmap.scaledToWidth(self.preview_label.width()))
+        super().resizeEvent(event)
+
