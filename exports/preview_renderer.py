@@ -10,23 +10,23 @@ class PreviewRenderer:
         self.poppler_path = poppler_path
 
     def render(self, latex_code: str) -> str:
-        print("[DEBUG] Starting render()")
+        #print("[DEBUG] Starting render()")
 
         with tempfile.TemporaryDirectory() as temp_dir:
             tex_path = os.path.join(temp_dir, "temp.tex")
             pdf_path = os.path.join(temp_dir, "temp.pdf")
             preview_path = os.path.join(temp_dir, "temp_preview.png")
 
-            print("[DEBUG] LaTeX content being written:")
-            print("-" * 40)
-            print(latex_code)
-            print("-" * 40)
+            #print("[DEBUG] LaTeX content being written:")
+            #print("-" * 40)
+            #print(latex_code)
+            #print("-" * 40)
 
             # Write LaTeX code to .tex file
             with open(tex_path, "w", encoding="utf-8") as f:
                 f.write(latex_code)
 
-            print("[DEBUG] Writing LaTeX to temp file...")
+            #print("[DEBUG] Writing LaTeX to temp file...")
 
             # Run pdflatex
             result = subprocess.run(
@@ -47,7 +47,7 @@ class PreviewRenderer:
                 print("[ERROR] PDF not generated")
                 return ""
 
-            print("[DEBUG] Converting PDF to PNG preview...")
+            #print("[DEBUG] Converting PDF to PNG preview...")
             images = convert_from_path(pdf_path, poppler_path=self.poppler_path)
 
             if not images:
@@ -56,7 +56,7 @@ class PreviewRenderer:
 
             # Save the first page of the PDF as an image
             images[0].save(preview_path, "PNG")
-            print("[DEBUG] Saved preview to:", preview_path)
+            #print("[DEBUG] Saved preview to:", preview_path)
 
             # Copy it to your static output directory if needed
             final_path = os.path.join("exports", "output", "temp_preview.png")
